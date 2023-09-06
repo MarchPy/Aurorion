@@ -1,6 +1,7 @@
 lxml
 rich
 pandas
+yfinance
 html5lib
 openpyxl
 selenium

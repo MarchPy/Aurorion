@@ -1,7 +1,8 @@
 import json
 import time
-import sqlite3
+import numpy as np
 import pandas as pd
+import yfinance as yf
 import selenium.common.exceptions
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -33,43 +34,14 @@ class FiiExplorer:
         with console.status(status='Filtrando dados...'):
             df_filtrado = self.filtro(df=df_tratado)
 
-        with console.status(status='Inserindo dados no banco de dados...'):
-            self.database(df=df_filtrado)
-
-        with console.status(status='Aplicando AHP Gaussiano...'):
-            df_final = self.ahp_gaussian(df=df_filtrado)
+        with console.status(status='Calculando indicadores técnicos...'):
+            df_final = self.technical_indicators(df=df_filtrado)
 
         with console.status(status='Salvando dados em formato de excel...'):
             df_final = df_final[['Nome', 'Setor', 'Tipo',
-                                 'Cotação Atual', 'DY (12 Meses)', 'Ranking AHP Gaussiano']]
+                                 'Cotação Atual', 'DY (12 Meses)', 'Vol. Anualizada']]
             df_final.to_excel(
                 excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
-
-    @staticmethod
-    def database(df: pd.DataFrame):
-        with sqlite3.connect(database='Data/History.sqlite') as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """
-                CREATE TABLE IF NOT EXISTS History (
-                    data TEXT,
-                    ticker TEXT,
-                    nome TEXT,
-                    setor TEXT,
-                    dy FLOAT, 
-                    pvp FLOAT,
-                    liquidez_media_diaria INT
-                );
-                """
-            )
-
-            for index, row in df.iterrows():
-                cursor.execute(
-                    """
-                    INSERT INTO History
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """, (datetime.now().strftime('%d/%m/%Y'), index, row['Nome'], row['Setor'], row['DY (12 Meses)'], row['P/VP'], row['Liquidez média diária'])
-                )
 
     @staticmethod
     def colect_tickers() -> pd.DataFrame:
@@ -197,9 +169,10 @@ class FiiExplorer:
 
     @staticmethod
     def tratar_dados(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.applymap(lambda x: x.replace('%', ''))
-        df = df.applymap(lambda x: x.replace('.', '').replace(',', '.'))
-        df = df.applymap(lambda x: 0 if x == "-" else x)
+        df = df.apply(lambda x: x.map(lambda x: x.replace('%', '')))
+        df = df.apply(lambda x: x.map(
+            lambda x: x.replace('.', '').replace(',', '.')))
+        df = df.apply(lambda x: x.map(lambda x: 0 if x == "-" else x))
 
         columns_to_float = [
             'Cotação Atual', 'Cotação mínima (52 Meses)', 'Cotação máxima (52 Meses)', 'DY (12 Meses)', 'Valorização (12 Meses)',
@@ -290,7 +263,7 @@ class FiiExplorer:
 
     @staticmethod
     def definir_quantidade_de_compra(df: pd.DataFrame, ammount: int = 1000) -> pd.DataFrame:
-        df = df
+        df_copy = df.copy()
         parts = [
             60, 10, 10, 10, 10, 10
         ]
@@ -304,7 +277,23 @@ class FiiExplorer:
             df.loc[index, 'Quant. de compra'] = qtd
             i += 1
 
-        return df
+        return df_copy
+
+    @staticmethod
+    def technical_indicators(df: pd.DataFrame):
+        df_copy = df.copy()
+        for index, _ in df.iterrows():
+            df_yf = yf.Ticker(
+                ticker=index + ".SA").history(period='1y', interval='1d')
+
+            # Calcular o desvio padrão dos retornos diários
+            desvio_padrao_diario = df_yf['Close'].std()
+            # Calcular a volatilidade anualizada
+            volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
+            df_copy.loc[index, 'Vol. Anualizada'] = int(
+                volatilidade_anualizada)
+
+        return df_copy
 
 
 if __name__ == "__main__":
