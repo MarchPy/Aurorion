@@ -17,39 +17,41 @@ console = Console()
 
 class FiiExplorer:
     def __init__(self) -> None:
-        with console.status(status='Inicializando driver...'):
-            self.driver = webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()))
-            self.driver.maximize_window()
+        try:
+            with console.status(status='Inicializando driver...'):
+                self.driver = webdriver.Chrome(
+                    service=Service(ChromeDriverManager().install()))
+                self.driver.maximize_window()
 
-        with console.status(status='Coletando os tickers...'):
-            df_tickers = self.colect_tickers()
+            with console.status(status='Coletando os tickers...'):
+                df_tickers = self.coletar_tickers()
 
-        with console.status(status='Coletando dados do site Status Invest...'):
-            df_data = self.colect_data_from_ticker(tickers=df_tickers)
+            with console.status(status='Coletando dados do site Status Invest...'):
+                df_final = self.coletar_dados_do_ticker(tickers=df_tickers)
 
-        with console.status(status='Tratando dados coletados...'):
-            df_tratado = self.tratar_dados(df=df_data)
+            with console.status(status='Tratando dados coletados...'):
+                df_final = self.tratar_dados(df=df_final)
 
-        with console.status(status='Filtrando dados...'):
-            df_filtrado = self.filtro(df=df_tratado)
+            with console.status(status='Filtrando dados...'):
+                df_final = self.filtro(df=df_final)
 
-        with console.status(status='Calculando indicadores técnicos...'):
-            df_final = self.technical_indicators(df=df_filtrado)
+            with console.status(status='Calculando indicadores técnicos...'):
+                df_final = self.indicadores_tecnicos(df=df_final)
 
-        with console.status(status='Salvando dados em formato de excel...'):
-            df_final = df_final[['Nome', 'Setor', 'Tipo',
-                                 'Cotação Atual', 'DY (12 Meses)', 'Vol. Anualizada']]
-            df_final.to_excel(
-                excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
+            with console.status(status='Calculando AHP Gaussiano...'):
+                df_final = self.ahp_gaussian(df=df_final)
 
-    @staticmethod
-    def colect_tickers() -> pd.DataFrame:
-        tickers = pd.read_csv(
-            filepath_or_buffer='Data/TickersFIIs.csv', encoding='iso-8859-1', sep=';')
-        return tickers
+            with console.status(status='Salvando dados em formato de excel...'):
+                df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual',
+                                     'DY (12 Meses)', 'Volat. Anualizada', 'Volat. Mensal', 'Ranking AHP Gaussiano']]
+                df_final.to_excel(
+                    excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
 
-    def colect_data_from_ticker(self, tickers) -> pd.DataFrame:
+        except KeyboardInterrupt:
+            console.print(
+                f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[green]Processo encerrado pelo usuário[/]]")
+
+    def coletar_dados_do_ticker(self, tickers) -> pd.DataFrame:
         qtd_index = 1
         df = pd.DataFrame()
 
@@ -154,7 +156,7 @@ class FiiExplorer:
                 df_tmp = pd.DataFrame(line)
                 df = pd.concat([df, df_tmp])
                 console.print(
-                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Dados coletados para o ativo[/]] :: [{row['Ticker']}] [[yellow]Empresas[/]] :: [{qtd_index} de {len(tickers)}]")
+                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Dados coletados para o ativo[/]] :: [{row['Ticker']}] ---> [[yellow]Empresas[/]] :: [{qtd_index} de {len(tickers)}]")
 
             except selenium.common.exceptions.NoSuchElementException as e:
                 console.print(
@@ -166,6 +168,12 @@ class FiiExplorer:
             qtd_index += 1
 
         return df
+
+    @staticmethod
+    def coletar_tickers() -> pd.DataFrame:
+        tickers = pd.read_csv(
+            filepath_or_buffer='Data/TickersFIIs.csv', encoding='iso-8859-1', sep=';')
+        return tickers
 
     @staticmethod
     def tratar_dados(df: pd.DataFrame) -> pd.DataFrame:
@@ -199,7 +207,9 @@ class FiiExplorer:
             (df['P/VP'] <= config['PVP Max']) & \
             (df['N° de cotistas'] >= config['N de cotistas Min']) & \
             (df['Liquidez média diária'] >= config['Liquidez média diária Min']) & \
-            (df['Valorização (12 Meses)'] > config['Valorização (12 Meses) Min'])
+            (df['Valorização (12 Meses)'] > config['Valorização (12 Meses) Min']) & \
+            (df['Valorização (Mês atual)'] >
+             config['Valorização (Mês atual) Min'])
 
         df = df[param_filtro_]
 
@@ -210,7 +220,8 @@ class FiiExplorer:
         columns_verif = [
             'DY (12 Meses)', 'P/VP', 'N° de cotistas', 'DY CAGR (3 Anos)',
             'Liquidez média diária', 'Rendimento mensal médio (24 Meses)',
-            'Valorização (12 Meses)', 'Valorização (Mês atual)', 'Valor em Caixa'
+            'Valorização (12 Meses)', 'Valorização (Mês atual)', 'Valor em Caixa',
+            'Volat. Anualizada', 'Volat. Mensal'
         ]
 
         # Definição dos critérios de maximização e minimização
@@ -220,7 +231,7 @@ class FiiExplorer:
         ]
 
         minimize_criteria = [
-            'P/VP', 'Valor em Caixa'
+            'P/VP', 'Valor em Caixa', 'Volat. Anualizada'
         ]
 
         # Criação da matriz normalizada método AHP-GAUSSIANO
@@ -280,7 +291,7 @@ class FiiExplorer:
         return df_copy
 
     @staticmethod
-    def technical_indicators(df: pd.DataFrame):
+    def indicadores_tecnicos(df: pd.DataFrame):
         df_copy = df.copy()
         for index, _ in df.iterrows():
             df_yf = yf.Ticker(
@@ -290,8 +301,12 @@ class FiiExplorer:
             desvio_padrao_diario = df_yf['Close'].std()
             # Calcular a volatilidade anualizada
             volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
-            df_copy.loc[index, 'Vol. Anualizada'] = int(
-                volatilidade_anualizada)
+            df_copy.loc[index, 'Volat. Anualizada'] = round(
+                volatilidade_anualizada, 2)
+            
+            volatilidade_mensal = desvio_padrao_diario * np.sqrt(21)
+            df_copy.loc[index, 'Volat. Mensal'] = round(
+                volatilidade_mensal, 2)
 
         return df_copy
 
