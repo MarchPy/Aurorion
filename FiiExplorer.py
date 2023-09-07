@@ -221,7 +221,7 @@ class FiiExplorer:
             'DY (12 Meses)', 'P/VP', 'N° de cotistas', 'DY CAGR (3 Anos)',
             'Liquidez média diária', 'Rendimento mensal médio (24 Meses)',
             'Valorização (12 Meses)', 'Valorização (Mês atual)', 'Valor em Caixa',
-            'Volat. Anualizada', 'Volat. Mensal'
+            'Volat. Anualizada'
         ]
 
         # Definição dos critérios de maximização e minimização
@@ -231,7 +231,7 @@ class FiiExplorer:
         ]
 
         minimize_criteria = [
-            'P/VP', 'Valor em Caixa', 'Volat. Anualizada'
+            'P/VP', 'Valor em Caixa', 'Volat. Anualizada', 'Volat. Mensal'
         ]
 
         # Criação da matriz normalizada método AHP-GAUSSIANO
