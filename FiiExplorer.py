@@ -24,7 +24,7 @@ class FiiExplorer:
                 self.driver.maximize_window()
 
             with console.status(status='Coletando os tickers...'):
-                df_tickers = self.coletar_tickers()
+                df_tickers = self.coletar_tickers()[:100]
 
             with console.status(status='Coletando dados do site Status Invest...'):
                 df_final = self.coletar_dados_do_ticker(tickers=df_tickers)
@@ -38,12 +38,12 @@ class FiiExplorer:
             with console.status(status='Calculando indicadores técnicos...'):
                 df_final = self.indicadores_tecnicos(df=df_final)
 
-            with console.status(status='Calculando AHP Gaussiano...'):
-                df_final = self.ahp_gaussian(df=df_final)
+            # with console.status(status='Calculando AHP Gaussiano...'):
+            #    df_final = self.ahp_gaussian(df=df_final)
 
             with console.status(status='Salvando dados em formato de excel...'):
                 df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual',
-                                     'DY (12 Meses)', 'Volat. Anualizada', 'Volat. Mensal', 'Ranking AHP Gaussiano']]
+                                     'DY (12 Meses)', 'Volat. Anualizada', 'Volat. Mensal',]]
                 df_final.to_excel(
                     excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
 
@@ -166,6 +166,8 @@ class FiiExplorer:
                 break
 
             qtd_index += 1
+        
+        self.driver.close()
 
         return df
 
@@ -202,17 +204,17 @@ class FiiExplorer:
             config = json.load(file_obj)
 
         param_filtro_ = \
-            (df['DY (12 Meses)'] >= config['DY Min']) & \
-            (df['P/VP'] > config['PVP Min']) & \
-            (df['P/VP'] <= config['PVP Max']) & \
-            (df['N° de cotistas'] >= config['N de cotistas Min']) & \
-            (df['Liquidez média diária'] >= config['Liquidez média diária Min']) & \
-            (df['Valorização (12 Meses)'] > config['Valorização (12 Meses) Min']) & \
-            (df['Valorização (Mês atual)'] >
-             config['Valorização (Mês atual) Min'])
+            (df['DY (12 Meses)'] >= config['DY (Min)']) & \
+            (df['P/VP'] >= config['PVP (Min)']) & \
+            (df['P/VP'] <= config['PVP (Max)']) & \
+            (df['N° de cotistas'] >= config['N de cotistas (Min)']) & \
+            (df['Liquidez média diária'] >= config['Liquidez média diária (Min)']) & \
+            (df['Valorização (12 Meses)'] >= config['Valorização (12 Meses) (Min)']) & \
+            (df['Valorização (Mês atual)'] >=
+             config['Valorização (Mês atual) (Min)'])
 
         df = df[param_filtro_]
-
+    
         return df
 
     @staticmethod
@@ -293,20 +295,45 @@ class FiiExplorer:
     @staticmethod
     def indicadores_tecnicos(df: pd.DataFrame):
         df_copy = df.copy()
+        df_copy['Volat. Anualizada'] = np.nan
+        df_copy['Volat. Mensal'] = np.nan
+
         for index, _ in df.iterrows():
             df_yf = yf.Ticker(
                 ticker=index + ".SA").history(period='1y', interval='1d')
 
-            # Calcular o desvio padrão dos retornos diários
-            desvio_padrao_diario = df_yf['Close'].std()
-            # Calcular a volatilidade anualizada
-            volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
-            df_copy.loc[index, 'Volat. Anualizada'] = round(
-                volatilidade_anualizada, 2)
-            
-            volatilidade_mensal = desvio_padrao_diario * np.sqrt(21)
-            df_copy.loc[index, 'Volat. Mensal'] = round(
-                volatilidade_mensal, 2)
+            if df_yf is not df_yf.empty and len(df_yf) >= 250:
+                # Calcular as volatilidades
+                desvio_padrao_diario = df_yf['Close'].std()
+                # Calcular a volatilidade anualizada
+                volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
+                df_copy.loc[index, 'Volat. Anualizada'] = round(
+                    volatilidade_anualizada, 2)
+
+                volatilidade_mensal = desvio_padrao_diario * np.sqrt(21)
+                df_copy.loc[index, 'Volat. Mensal'] = round(
+                    volatilidade_mensal, 2)
+
+                console.print(
+                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] :: [[yellow]Ticker[/]] [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}]"
+                )
+                
+                # Calculando RSI
+                n = 14
+                def rma(x, n, y0):
+                    a = (n-1) / n
+                    ak = a**np.arange(len(x)-1, -1, -1)
+                    return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
+
+                df_yf['change'] = df_yf['Close'].diff()
+                df_yf['gain'] = df_yf.change.mask(df_yf.change < 0, 0.0)
+                df_yf['loss'] = -df_yf.change.mask(df_yf.change > 0, -0.0)
+                df_yf['avg_gain'] = rma(df_yf.gain[n+1:].to_numpy(), n, np.nansum(df_yf.gain.to_numpy()[:n+1])/n)
+                df_yf['avg_loss'] = rma(df_yf.loss[n+1:].to_numpy(), n, np.nansum(df_yf.loss.to_numpy()[:n+1])/n)
+                df_yf['rs'] = df_yf.avg_gain / df_yf.avg_loss
+                df_yf['rsi'] = 100 - (100 / (1 + df_yf.rs))
+
+                df_copy.iloc[index, 'RSI'] = df_copy['rsi'][-1:]
 
         return df_copy
 

@@ -1,9 +1,9 @@
 {
-    "DY Min": 12,
-    "PVP Max": 2,
-    "PVP Min": 0,
-    "N de cotistas Min": 10000,
-    "Liquidez média diária Min": 200000,
-    "Valorização (12 Meses) Min": 0,
-    "Valorização (Mês atual) Min": -1
+    "DY (Min)": 12,
+    "PVP (Max)": 2,
+    "PVP (Min)": 0,
+    "N de cotistas (Min)": 10000,
+    "Liquidez média diária (Min)": 200000,
+    "Valorização (12 Meses) (Min)": 0,
+    "Valorização (Mês atual) (Min)": -1
 }
