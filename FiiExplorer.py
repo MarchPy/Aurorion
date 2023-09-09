@@ -19,8 +19,7 @@ class FiiExplorer:
     def __init__(self) -> None:
         try:
             with console.status(status='Inicializando driver...'):
-                self.driver = webdriver.Chrome(
-                    service=Service(ChromeDriverManager().install()))
+                self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
                 self.driver.maximize_window()
 
             with console.status(status='Coletando os tickers...'):
@@ -42,11 +41,10 @@ class FiiExplorer:
                 df_final = self.ahp_gaussian(df=df_final)
 
             with console.status(status='Salvando dados em formato de excel...'):
-                df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
-                                     'Volat. Anualizada', 'Volat. Mensal', 'RSI', 'Ranking AHP']]
-                df_final.to_excel(
-                    excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
-
+                df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)', 'Volat. Anualizada', 'Volat. Mensal', 'RSI', 'Ranking AHP']]
+                filename = f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx"
+                df_final.to_excel(excel_writer=filename, index=True)
+                
         except KeyboardInterrupt:
             console.print(
                 f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[green]Processo encerrado pelo usuário[/]]")
@@ -175,14 +173,15 @@ class FiiExplorer:
     def coletar_tickers() -> pd.DataFrame:
         tickers = pd.read_csv(
             filepath_or_buffer='Data/TickersFIIs.csv', encoding='iso-8859-1', sep=';')
-        
+
         return tickers
 
     @staticmethod
     def tratar_dados(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.apply(lambda x: x.map(lambda y: y.replace('%', '')))
-        df = df.apply(lambda x: x.map(lambda y: y.replace('.', '').replace(',', '.')))
-        df = df.apply(lambda x: x.map(lambda y: 0 if x == "-" else y))
+        df = df.apply(lambda x: x.map(lambda x: x.replace('%', '')))
+        df = df.apply(lambda x: x.map(
+            lambda x: x.replace('.', '').replace(',', '.')))
+        df = df.apply(lambda x: x.map(lambda x: 0 if x == "-" else x))
 
         columns_to_float = [
             'Cotação Atual', 'Cotação mínima (52 Meses)', 'Cotação máxima (52 Meses)', 'DY (12 Meses)', 'Valorização (12 Meses)',
@@ -262,7 +261,8 @@ class FiiExplorer:
         # Calcular o ranking final
         rank_final = sensibilidade.rank(ascending=False)
 
-        # Adicionar as colunas de média, desvio padrão, Fator Gaussiano, sensibilidade e ranking final ao DataFrame
+        # Adicionar as colunas de média, desvio padrão, Fator Gaussiano,
+        # sensibilidade e ranking final ao DataFrame
         df_copy['Media'] = media
         df_copy['Desvio Padrao'] = desvio_padrao
         df_copy['Fator Gaussiano'] = fator_gaussiano
@@ -270,7 +270,8 @@ class FiiExplorer:
         df_copy['Ranking Final'] = rank_final
 
         for index, _ in df_final.iterrows():
-            df_final.loc[index, 'Ranking AHP'] = df_copy.loc[index, 'Ranking Final']
+            df_final.loc[index,
+                         'Ranking AHP'] = df_copy.loc[index, 'Ranking Final']
 
         df_final.sort_values(by='Ranking AHP', ascending=True, inplace=True)
         return df_final
@@ -310,7 +311,8 @@ class FiiExplorer:
                 # Calcular a volatilidade anualizada
                 volatilidade_anualizada = round(
                     desvio_padrao_diario * np.sqrt(252), 2)
-                df_copy.loc[index, 'Volat. Anualizada'] = volatilidade_anualizada
+                df_copy.loc[index,
+                            'Volat. Anualizada'] = volatilidade_anualizada
 
                 volatilidade_mensal = round(
                     desvio_padrao_diario * np.sqrt(21), 2)
@@ -321,28 +323,31 @@ class FiiExplorer:
                     period = 14
 
                     def rma(x, n, y0):
-                        a = (n-1) / n
-                        ak = a**np.arange(len(x)-1, -1, -1)
-                        return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
+                        a = (n - 1) / n
+                        ak = a**np.arange(len(x) - 1, -1, -1)
+                        return np.r_[np.full(n, np.nan), y0, np.cumsum(
+                            ak * x) / ak / n + y0 * a**np.arange(1, len(x) + 1)]
 
                     df_yf['change'] = df_yf['Close'].diff()
                     df_yf['gain'] = df_yf.change.mask(df_yf.change < 0, 0.0)
                     df_yf['loss'] = -df_yf.change.mask(df_yf.change > 0, -0.0)
-                    df_yf['avg_gain'] = rma(df_yf.gain[period+1:].to_numpy(), period, np.nansum(df_yf.gain.to_numpy()[:period+1])/period)
-                    df_yf['avg_loss'] = rma(df_yf.loss[period+1:].to_numpy(), period, np.nansum(df_yf.loss.to_numpy()[:period+1])/period)
+                    df_yf['avg_gain'] = rma(
+                        df_yf.gain[period + 1:].to_numpy(), period, np.nansum(df_yf.gain.to_numpy()[:period + 1]) / period)
+                    df_yf['avg_loss'] = rma(
+                        df_yf.loss[period + 1:].to_numpy(), period, np.nansum(df_yf.loss.to_numpy()[:period + 1]) / period)
                     df_yf['rs'] = df_yf.avg_gain / df_yf.avg_loss
                     df_yf['rsi'] = 100 - (100 / (1 + df_yf.rs))
                     rsi = round(df_yf['rsi'][-1:].values[0], 2)
                     df_copy.loc[index, 'RSI'] = rsi
 
                     console.print(
-                        f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] [[yellow]Ticker[/]] :: [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}] [[yellow]RSI[/]] :: [{rsi}]"
+                        f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Indicadores calculados[/]] ---> [[yellow]Ticker[/]] :: [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}] [[yellow]RSI[/]] :: [{rsi}]"
                     )
 
                 except ValueError:
                     pass
 
-        return df_copy  
+        return df_copy
 
 
 if __name__ == "__main__":
