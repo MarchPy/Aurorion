@@ -24,7 +24,7 @@ class FiiExplorer:
                 self.driver.maximize_window()
 
             with console.status(status='Coletando os tickers...'):
-                df_tickers = self.coletar_tickers()[:100]
+                df_tickers = self.coletar_tickers()
 
             with console.status(status='Coletando dados do site Status Invest...'):
                 df_final = self.coletar_dados_do_ticker(tickers=df_tickers)
@@ -38,12 +38,12 @@ class FiiExplorer:
             with console.status(status='Calculando indicadores técnicos...'):
                 df_final = self.indicadores_tecnicos(df=df_final)
 
-            # with console.status(status='Calculando AHP Gaussiano...'):
-            #    df_final = self.ahp_gaussian(df=df_final)
+            with console.status(status='Calculando AHP Gaussiano...'):
+                df_final = self.ahp_gaussian(df=df_final)
 
             with console.status(status='Salvando dados em formato de excel...'):
-                df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual',
-                                     'DY (12 Meses)', 'Volat. Anualizada', 'Volat. Mensal',]]
+                df_final = df_final[['Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
+                                     'Volat. Anualizada', 'Volat. Mensal', 'RSI', 'Ranking AHP']]
                 df_final.to_excel(
                     excel_writer=f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
 
@@ -166,7 +166,7 @@ class FiiExplorer:
                 break
 
             qtd_index += 1
-        
+
         self.driver.close()
 
         return df
@@ -175,14 +175,14 @@ class FiiExplorer:
     def coletar_tickers() -> pd.DataFrame:
         tickers = pd.read_csv(
             filepath_or_buffer='Data/TickersFIIs.csv', encoding='iso-8859-1', sep=';')
+        
         return tickers
 
     @staticmethod
     def tratar_dados(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.apply(lambda x: x.map(lambda x: x.replace('%', '')))
-        df = df.apply(lambda x: x.map(
-            lambda x: x.replace('.', '').replace(',', '.')))
-        df = df.apply(lambda x: x.map(lambda x: 0 if x == "-" else x))
+        df = df.apply(lambda x: x.map(lambda y: y.replace('%', '')))
+        df = df.apply(lambda x: x.map(lambda y: y.replace('.', '').replace(',', '.')))
+        df = df.apply(lambda x: x.map(lambda y: 0 if x == "-" else y))
 
         columns_to_float = [
             'Cotação Atual', 'Cotação mínima (52 Meses)', 'Cotação máxima (52 Meses)', 'DY (12 Meses)', 'Valorização (12 Meses)',
@@ -214,65 +214,66 @@ class FiiExplorer:
              config['Valorização (Mês atual) (Min)'])
 
         df = df[param_filtro_]
-    
+
         return df
 
     @staticmethod
     def ahp_gaussian(df: pd.DataFrame) -> pd.DataFrame:
-        columns_verif = [
+        df_copy = df.copy()
+        df_final = df.copy()
+
+        df_copy = df_copy[[
             'DY (12 Meses)', 'P/VP', 'N° de cotistas', 'DY CAGR (3 Anos)',
             'Liquidez média diária', 'Rendimento mensal médio (24 Meses)',
             'Valorização (12 Meses)', 'Valorização (Mês atual)', 'Valor em Caixa',
-            'Volat. Anualizada'
-        ]
+            'Volat. Anualizada', 'Volat. Mensal'
+        ]]
 
-        # Definição dos critérios de maximização e minimização
-        maximize_criteria = [
-            'DY (12 Meses)', 'DY CAGR (3 Anos)', 'Liquidez média diária', 'N° de cotistas',
-            'Valorização (12 Meses)', 'Valorização (Mês atual)', 'Rendimento mensal médio (24 Meses)',
-        ]
+        crit_max_min = {
+            'DY (12 Meses)': 'MAX',
+            'P/VP': 'MIN',
+            'N° de cotistas': 'MAX',
+            'DY CAGR (3 Anos)': 'MAX',
+            'Liquidez média diária': 'MAX',
+            'Rendimento mensal médio (24 Meses)': 'MAX',
+            'Valorização (12 Meses)': 'MAX',
+            'Valorização (Mês atual)': 'MAX',
+            'Valor em Caixa': 'MIN',
+            'Volat. Anualizada': 'MAX',
+            'Volat. Mensal': 'MAX',
+        }
 
-        minimize_criteria = [
-            'P/VP', 'Valor em Caixa', 'Volat. Anualizada', 'Volat. Mensal'
-        ]
+        # Calcular a matriz normalizada
+        for col in crit_max_min:
+            if crit_max_min[col] == 'MAX':
+                df_copy[col] = df_copy[col] / df_copy[col].sum()
+            else:
+                df_copy[col] = 1 / df_copy[col] / (1 / df_copy[col]).sum()
 
-        # Criação da matriz normalizada método AHP-GAUSSIANO
-        df_normalized = df[columns_verif].copy()
+        # Calcular a média, desvio padrão e o Fator Gaussiano
+        media = df_copy.mean()
+        desvio_padrao = df_copy.std()
+        fator_gaussiano = desvio_padrao / media
 
-        # Para critérios de maximização, utiliza-se a fórmula de normalização
-        for col in maximize_criteria:
-            df_normalized[col] = (df[col] - df[col].min()) / \
-                (df[col].max() - df[col].min())
+        # Calcular a análise de sensibilidade do ranking
+        weights = fator_gaussiano.values
+        sensibilidade = df_copy.dot(weights)
 
-        # Para critérios de minimização, utiliza-se a fórmula de normalização inversa
-        for col in minimize_criteria:
-            df_normalized[col] = 1 / \
-                ((df[col] - df[col].min()) / (df[col].max() - df[col].min()))
+        # Calcular o ranking final
+        rank_final = sensibilidade.rank(ascending=False)
 
-        # Calcular a média, desvio padrão e o fator gaussiano
-        df_normalized['Mean'] = df_normalized.mean(axis=1)
-        df_normalized['StdDev'] = df_normalized.std(axis=1)
-        df_normalized['Gaussian_Factor'] = df_normalized['StdDev'] / \
-            df_normalized['Mean']
+        # Adicionar as colunas de média, desvio padrão, Fator Gaussiano, sensibilidade e ranking final ao DataFrame
+        df_copy['Media'] = media
+        df_copy['Desvio Padrao'] = desvio_padrao
+        df_copy['Fator Gaussiano'] = fator_gaussiano
+        df_copy['Analise Sensibilidade'] = sensibilidade
+        df_copy['Ranking Final'] = rank_final
 
-        # Análise de sensibilidade do ranking do método AHP-GAUSSIANO
-        df_normalized['Ranking_Sensitivity'] = df_normalized['Gaussian_Factor'].sum(
-        ) - df_normalized['Gaussian_Factor']
+        for index, _ in df_final.iterrows():
+            df_final.loc[index, 'Ranking AHP'] = df_copy.loc[index, 'Ranking Final']
 
-        # Ranking Final
-        df_normalized['Ranking_Final'] = df_normalized['Ranking_Sensitivity'].rank(
-            ascending=False)
-
-        # Ordenando o dataframe pelo ranking final
-        df_normalized.sort_values(by='Ranking_Final', inplace=True)
-
-        for index,  row in df_normalized.iterrows():
-            df.loc[index, 'Ranking AHP Gaussiano'] = row['Ranking_Final']
-
-        df.sort_values(by='Ranking AHP Gaussiano',
-                       ascending=True, inplace=True)
-
-        return df
+        df_final.sort_values(by='Ranking AHP', ascending=True, inplace=True)
+        return df_final
 
     @staticmethod
     def definir_quantidade_de_compra(df: pd.DataFrame, ammount: int = 1000) -> pd.DataFrame:
@@ -293,49 +294,55 @@ class FiiExplorer:
         return df_copy
 
     @staticmethod
-    def indicadores_tecnicos(df: pd.DataFrame):
+    def indicadores_tecnicos(df: pd.DataFrame) -> pd.DataFrame:
         df_copy = df.copy()
         df_copy['Volat. Anualizada'] = np.nan
         df_copy['Volat. Mensal'] = np.nan
+        df_copy['RSI'] = np.nan
 
         for index, _ in df.iterrows():
             df_yf = yf.Ticker(
-                ticker=index + ".SA").history(period='1y', interval='1d')
+                ticker=str(index) + ".SA").history(period='1y', interval='1d')
 
             if df_yf is not df_yf.empty and len(df_yf) >= 250:
                 # Calcular as volatilidades
                 desvio_padrao_diario = df_yf['Close'].std()
                 # Calcular a volatilidade anualizada
-                volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
-                df_copy.loc[index, 'Volat. Anualizada'] = round(
-                    volatilidade_anualizada, 2)
+                volatilidade_anualizada = round(
+                    desvio_padrao_diario * np.sqrt(252), 2)
+                df_copy.loc[index, 'Volat. Anualizada'] = volatilidade_anualizada
 
-                volatilidade_mensal = desvio_padrao_diario * np.sqrt(21)
-                df_copy.loc[index, 'Volat. Mensal'] = round(
-                    volatilidade_mensal, 2)
+                volatilidade_mensal = round(
+                    desvio_padrao_diario * np.sqrt(21), 2)
+                df_copy.loc[index, 'Volat. Mensal'] = volatilidade_mensal
 
-                console.print(
-                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] :: [[yellow]Ticker[/]] [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}]"
-                )
-                
                 # Calculando RSI
-                n = 14
-                def rma(x, n, y0):
-                    a = (n-1) / n
-                    ak = a**np.arange(len(x)-1, -1, -1)
-                    return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
+                try:
+                    period = 14
 
-                df_yf['change'] = df_yf['Close'].diff()
-                df_yf['gain'] = df_yf.change.mask(df_yf.change < 0, 0.0)
-                df_yf['loss'] = -df_yf.change.mask(df_yf.change > 0, -0.0)
-                df_yf['avg_gain'] = rma(df_yf.gain[n+1:].to_numpy(), n, np.nansum(df_yf.gain.to_numpy()[:n+1])/n)
-                df_yf['avg_loss'] = rma(df_yf.loss[n+1:].to_numpy(), n, np.nansum(df_yf.loss.to_numpy()[:n+1])/n)
-                df_yf['rs'] = df_yf.avg_gain / df_yf.avg_loss
-                df_yf['rsi'] = 100 - (100 / (1 + df_yf.rs))
+                    def rma(x, n, y0):
+                        a = (n-1) / n
+                        ak = a**np.arange(len(x)-1, -1, -1)
+                        return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
 
-                df_copy.iloc[index, 'RSI'] = df_copy['rsi'][-1:]
+                    df_yf['change'] = df_yf['Close'].diff()
+                    df_yf['gain'] = df_yf.change.mask(df_yf.change < 0, 0.0)
+                    df_yf['loss'] = -df_yf.change.mask(df_yf.change > 0, -0.0)
+                    df_yf['avg_gain'] = rma(df_yf.gain[period+1:].to_numpy(), period, np.nansum(df_yf.gain.to_numpy()[:period+1])/period)
+                    df_yf['avg_loss'] = rma(df_yf.loss[period+1:].to_numpy(), period, np.nansum(df_yf.loss.to_numpy()[:period+1])/period)
+                    df_yf['rs'] = df_yf.avg_gain / df_yf.avg_loss
+                    df_yf['rsi'] = 100 - (100 / (1 + df_yf.rs))
+                    rsi = round(df_yf['rsi'][-1:].values[0], 2)
+                    df_copy.loc[index, 'RSI'] = rsi
 
-        return df_copy
+                    console.print(
+                        f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] [[yellow]Ticker[/]] :: [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}] [[yellow]RSI[/]] :: [{rsi}]"
+                    )
+
+                except ValueError:
+                    pass
+
+        return df_copy  
 
 
 if __name__ == "__main__":

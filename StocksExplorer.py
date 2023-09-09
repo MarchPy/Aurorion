@@ -22,9 +22,16 @@ class StocksExplorer:
         self.driver = webdriver.Chrome(service=Service(executable_path=ChromeDriverManager().install()))
         self.driver.maximize_window()
         
-        df = self.coletar_dados()
-        df = self.filtrar_dados(df=df)
-        df = self.indicadores_tecnicos(df=df)
+        with console.status(status='Coletando dados do site Investidor10...'):
+            df = self.coletar_dados()
+        
+        with console.status(status='Filtrando dados...'):
+            df = self.filtrar_dados(df=df)
+
+        with console.status(status='Calculando indicadores técnicos...'):
+            df = self.indicadores_tecnicos(df=df)
+
+        df = df[['Cotação', 'Volat. Anualizada', 'Volat. Mensal', 'Cres. LPA (3 Anos)', 'RSI']]
         df.to_excel(excel_writer=f"Resultado Ações ({datetime.now().strftime('%d-%m-%Y')}).xlsx", index=True)
         
     def coletar_dados(self) -> pd.DataFrame:
@@ -55,7 +62,7 @@ class StocksExplorer:
                 df_tmp['Ticker'] = ticker
                 df_tmp['Cotação'] = self.driver.find_element(by=By.XPATH, value='//*[@id="cards-ticker"]/div[1]/div[2]/div/span').text
                 df = pd.concat([df, df_tmp])
-                console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Dados coletados para o ativo[/]] :: [{ticker}] [[yellow]Empresas[/]] :: [{qtd_index} de {len(self.tickers)}]")
+                console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Dados coletados para o ativo[/]] :: [{ticker}] ---> [[yellow]Empresas[/]] :: [{qtd_index} de {len(self.tickers)}]")
             
             except IndexError:
                 pass
@@ -75,6 +82,7 @@ class StocksExplorer:
         df_copy = df.copy()
         df_copy['Volat. Anualizada'] = np.nan
         df_copy['Volat. Mensal'] = np.nan
+        df_copy['RSI'] = np.nan
 
         for index, _ in df.iterrows():
             df_yf = yf.Ticker(
@@ -84,34 +92,42 @@ class StocksExplorer:
                 # Calcular as volatilidades
                 desvio_padrao_diario = df_yf['Close'].std()
                 # Calcular a volatilidade anualizada
-                volatilidade_anualizada = desvio_padrao_diario * np.sqrt(252)
-                df_copy.loc[index, 'Volat. Anualizada'] = round(
-                    volatilidade_anualizada, 2)
+                volatilidade_anualizada = round(desvio_padrao_diario * np.sqrt(252), 2)
+                df_copy.loc[index, 'Volat. Anualizada'] = volatilidade_anualizada
 
-                volatilidade_mensal = desvio_padrao_diario * np.sqrt(21)
-                df_copy.loc[index, 'Volat. Mensal'] = round(
-                    volatilidade_mensal, 2)
+                volatilidade_mensal = round(desvio_padrao_diario * np.sqrt(21), 2)
+                df_copy.loc[index, 'Volat. Mensal'] = volatilidade_mensal
 
                 console.print(
-                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] :: [[yellow]Ticker[/]] [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}]"
+                    f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Volatilidades calculadas[/]] [[yellow]Ticker[/]] :: [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}]"
                 )
                 
                 # Calculando RSI
-                n = 14
-                def rma(x, n, y0):
-                    a = (n-1) / n
-                    ak = a**np.arange(len(x)-1, -1, -1)
-                    return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
+                try:
+                    n = 14
+                    def rma(x, n, y0):
+                        a = (n-1) / n
+                        ak = a**np.arange(len(x)-1, -1, -1)
+                        return np.r_[np.full(n, np.nan), y0, np.cumsum(ak * x) / ak / n + y0 * a**np.arange(1, len(x)+1)]
 
-                df_copy['change'] = df_copy['Close'].diff()
-                df_copy['gain'] = df_copy.change.mask(df_yf.change < 0, 0.0)
-                df_copy['loss'] = -df_copy.change.mask(df_yf.change > 0, -0.0)
-                df_copy['avg_gain'] = rma(df_copy.gain[n+1:].to_numpy(), n, np.nansum(df_copy.gain.to_numpy()[:n+1])/n)
-                df_copy['avg_loss'] = rma(df_copy.loss[n+1:].to_numpy(), n, np.nansum(df_copy.loss.to_numpy()[:n+1])/n)
-                df_copy['rs'] = df_copy.avg_gain / df_copy.avg_loss
-                df_copy['rsi'] = 100 - (100 / (1 + df_copy.rs))
-                df_copy.drop(columns=['change', 'gain', 'loss', 'avg_gain', 'avg_loss', 'rs'], inplace=True)
-                df_copy.loc[index, 'RSI'] = round(df_copy['rsi'][-1:], 2)
+                    df_yf['change'] = df_yf['Close'].diff()
+                    df_yf['gain'] = df_yf.change.mask(df_yf.change < 0, 0.0)
+                    df_yf['loss'] = -df_yf.change.mask(df_yf.change > 0, -0.0)
+                    df_yf['avg_gain'] = rma(df_yf.gain[n+1:].to_numpy(), n, np.nansum(df_yf.gain.to_numpy()[:n+1])/n)
+                    df_yf['avg_loss'] = rma(df_yf.loss[n+1:].to_numpy(), n, np.nansum(df_yf.loss.to_numpy()[:n+1])/n)
+                    df_yf['rs'] = df_yf.avg_gain / df_yf.avg_loss
+                    df_yf['rsi'] = 100 - (100 / (1 + df_yf.rs))
+                    rsi =  round(df_yf['rsi'][-1:].values[0], 2)
+                    df_copy.loc[index, 'RSI'] = rsi
+
+                    console.print(
+                        f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]RSI calculado[/]] [[yellow]Ticker[/]] :: [{index}] [[yellow]RSI[/]] :: [{rsi}]"
+                    )
+
+                except ValueError:
+                    pass
+
+        return df_copy 
 
     @staticmethod
     def filtrar_dados(df: pd.DataFrame) -> pd.DataFrame:
@@ -137,7 +153,6 @@ class StocksExplorer:
         for index, row in df_filtrado.iterrows():
             lpa_a = df_copy[(df_copy['Ticker'] == row['Ticker']) & (df_copy.index == str(atual_year - 1))]['LPA'].values[0]
             lpa_b = df_copy[(df_copy['Ticker'] == row['Ticker']) & (df_copy.index == str(atual_year - 2))]['LPA'].values[0]
-            
             df_filtrado.loc[index, 'Cres. LPA (3 Anos)'] = row['LPA'] > lpa_a > lpa_b
 
         df_filtrado.set_index('Ticker', inplace=True)
