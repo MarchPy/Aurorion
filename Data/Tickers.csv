@@ -1,621 +1,504 @@
-TICKER
-AALR3
-ABCB4
-ABEV3
-ADHM3
-AERI3
-AESB3
-AFLT3
-AGRO3
-AGXY3
-AHEB3
-AHEB5
-AHEB6
-ALLD3
-ALPA3
-ALPA4
-ALPK3
-ALSC3
-ALSO3
-ALUP11
-ALUP3
-ALUP4
-AMAR3
-AMBP3
-AMER3
-ANDG3B
-ANDG4B
-ANIM3
-APER3
-APTI3
-APTI4
-ARML3
-ARZZ3
-ASAI3
-ATMP3
-ATOM3
-AURA33
-AURE3
-AVLL3
-AZEV3
-AZEV4
-AZUL4
-B3SA3
-BAHI3
-BALM3
-BALM4
-BAUH4
-BAZA3
-BBAS3
-BBDC3
-BBDC4
-BBML3
-BBSE3
-BDLL3
-BDLL4
-BEEF11
-BEEF3
-BEES3
-BEES4
-BFRE11
-BFRE12
-BGIP3
-BGIP4
-BIDI11
-BIDI3
-BIDI4
-BIOM3
-BLAU3
-BLUT3
-BLUT4
-BMEB3
-BMEB4
-BMGB4
-BMIN3
-BMIN4
-BMKS3
-BMOB3
-BNBR3
-BOAS3
-BOBR3
-BOBR4
-BPAC11
-BPAC3
-BPAC5
-BPAN4
-BPAR3
-BPAT33
-BPHA3
-BRAP3
-BRAP4
-BRBI11
-BRBI3
-BRBI4
-BRFS3
-BRGE11
-BRGE12
-BRGE3
-BRGE5
-BRGE6
-BRGE7
-BRGE8
-BRIN3
-BRIT3
-BRIV3
-BRIV4
-BRKM3
-BRKM5
-BRKM6
-BRML3
-BRPR3
-BRQB3
-BRSR3
-BRSR5
-BRSR6
-BSEV3
-BSLI3
-BSLI4
-BTTL4
-CALI3
-CALI4
-CAMB3
-CAMB4
-CAML3
-CASH3
-CASN3
-CASN4
-CATA3
-CATA4
-CBAV3
-CBEE3
-CCRO3
-CCXC3
-CEAB3
-CEBR3
-CEBR5
-CEBR6
-CEDO3
-CEDO4
-CEEB3
-CEEB5
-CEEB6
-CEED3
-CEED4
-CEGR3
-CEPE3
-CEPE5
-CEPE6
-CESP3
-CESP5
-CESP6
-CGAS3
-CGAS5
-CGRA3
-CGRA4
-CIEL3
-CLSA3
-CLSC3
-CLSC4
-CMIG3
-CMIG4
-CMIN3
-CMSA3
-CMSA4
-CNSY3
-COCE3
-COCE5
-COCE6
-COGN3
-CORR3
-CORR4
-CPFE3
-CPLE11
-CPLE3
-CPLE5
-CPLE6
-CPRE3
-CREM3
-CRFB3
-CRIV3
-CRIV4
-CRPG3
-CRPG5
-CRPG6
-CSAB3
-CSAB4
-CSAN3
-CSED3
-CSMG3
-CSNA3
-CSRN3
-CSRN5
-CSRN6
-CSUD3
-CTCA3
-CTKA3
-CTKA4
-CTNM3
-CTNM4
-CTSA3
-CTSA4
-CTSA8
-CURY3
-CVCB3
-CXSE3
-CYRE3
-DASA3
-DESK3
-DEXP3
-DEXP4
-DIRR3
-DMMO11
-DMMO3
-DMVF3
-DOHL3
-DOHL4
-DOTZ3
-DTCY3
-DTCY4
-DXCO3
-EALT3
-EALT4
-ECOR3
-ECPR3
-ECPR4
-EEEL3
-EEEL4
-EGIE3
-EKTR3
-EKTR4
-ELEK3
-ELEK4
-ELET3
-ELET5
-ELET6
-ELMD3
-ELPL3
-EMAE3
-EMAE4
-EMBR3
-ENAT3
-ENBR3
-ENEV3
-ENGI11
-ENGI3
-ENGI4
-ENJU3
-ENMA3B
-ENMA6B
-ENMT3
-ENMT4
-EPAR3
-EQPA3
-EQPA5
-EQPA6
-EQPA7
-EQTL3
-ESPA3
-ESTR3
-ESTR4
-ETER3
-EUCA3
-EUCA4
-EVEN3
-EZTC3
-FBMC3
-FBMC4
-FESA3
-FESA4
-FHER3
-FIBR3
-FIEI3
-FIGE3
-FIGE4
-FIQE3
-FLEX3
-FLRY3
-FNCN3
-FRAS3
-FRIO3
-FRTA3
-FTRT3B
-G2DI33
-GBIO33
-GEPA3
-GEPA4
-GETT11
-GETT3
-GETT4
-GFSA3
-GGBR3
-GGBR4
-GGPS3
-GMAT3
-GNDI3
-GOAU3
-GOAU4
-GOLL4
-GPAR3
-GPIV33
-GRAO3
-GRND3
-GSHP3
-GUAR3
-GUAR4
-HAGA3
-HAGA4
-HAPV3
-HBOR3
-HBRE3
-HBSA3
-HBTS5
-HETA3
-HETA4
-HGTX3
-HOOT3
-HOOT4
-HYPE3
-IDVL3
-IDVL4
-IFCM3
-IGBR3
-IGSN3
-IGTA3
-IGTI11
-IGTI3
-IGTI4
-INEP3
-INEP4
-INNT3
-INTB3
-IRBR3
-ITEC3
-ITSA3
-ITSA4
-ITUB3
-ITUB4
-JALL3
-JBSS3
-JFEN3
-JHSF3
-JOPA3
-JOPA4
-JSLG3
-KEPL3
-KLBN11
-KLBN3
-KLBN4
-KRSA3
-LAME3
-LAME4
-LAND3
-LAVV3
-LCAM3
-LEVE3
-LHER3
-LHER4
-LIGT3
-LINX3
-LIPR3
-LJQQ3
-LOGG3
-LOGN3
-LPSB3
-LREN3
-LTEL3B
-LUPA3
-LUXM3
-LUXM4
-LVTC3
-LWSA3
-MAGG3
-MAPT3
-MAPT4
-MATD3
-MBLY3
-MDIA3
-MDNE3
-MEAL3
-MEGA3
-MELK3
-MERC3
-MERC4
-MGEL3
-MGEL4
-MGLU3
-MILS3
-MLAS3
-MMAQ3
-MMAQ4
-MMXM3
-MNDL3
-MNPR3
-MOAR3
-MODL11
-MODL3
-MODL4
-MOSI3
-MOVI3
-MPLU3
-MRFG3
-MRSA3B
-MRSA5B
-MRSA6B
-MRVE3
-MSPA3
-MSPA4
-MSRO3
-MTIG3
-MTIG4
-MTRE3
-MTSA3
-MTSA4
-MULT3
-MWET3
-MWET4
-MYPK3
-NAFG3
-NAFG4
-NEMO3
-NEMO5
-NEMO6
-NEOE3
-NEXP3
-NGRD3
-NINJ3
-NORD3
-NRTQ3
-NTCO3
-NUTR3
-ODER4
-ODPV3
-OFSA3
-OGXP3
-OIBR3
-OIBR4
-OMGE3
-ONCO3
-OPCT3
-ORVR3
-OSXB3
-PARD3
-PATI3
-PATI4
-PCAR3
-PCAR4
-PDGR3
-PDTC3
-PEAB3
-PEAB4
-PETR3
-PETR4
-PETZ3
-PFRM3
-PGMN3
-PINE3
-PINE4
-PLAS3
-PLPL3
-PMAM3
-PNVL3
-PNVL4
-POMO3
-POMO4
-PORT3
-POSI3
-POWE3
-PPAR3
-PPLA11
-PRIO3
-PRNR3
-PSSA3
-PTBL3
-PTCA11
-PTCA3
-PTNT3
-PTNT4
-QGEP3
-QUAL3
-QUSW3
-QVQP3B
-RADL3
-RAIL3
-RAIZ4
-RANI3
-RANI4
-RAPT3
-RAPT4
-RCSL3
-RCSL4
-RDNI3
-RDOR3
-RECV3
-REDE3
-RENT3
-RLOG3
-RNEW11
-RNEW3
-RNEW4
-ROMI3
-RPAD3
-RPAD5
-RPAD6
-RPMG3
-RRRP3
-RSID3
-RSUL3
-RSUL4
-SANB11
-SANB3
-SANB4
-SAPR11
-SAPR3
-SAPR4
-SBFG3
-SBSP3
-SCAR3
-SEDU3
-SEER3
-SEQL3
-SGPS3
-SHOW3
-SHUL3
-SHUL4
-SIMH3
-SLCE3
-SLED3
-SLED4
-SMFT3
-SMLS3
-SMTO3
-SNSY3
-SNSY5
-SNSY6
-SOJA3
-SOMA3
-SOND3
-SOND5
-SOND6
-SPRI3
-SPRI5
-SPRI6
-SPRT3B
-SQIA3
-STBP3
-STKF3
-STTR3
-SULA11
-SULA3
-SULA4
-SUZB3
-SYNE3
-TAEE11
-TAEE3
-TAEE4
-TASA3
-TASA4
-TCNO3
-TCNO4
-TCSA3
-TECN3
-TEKA3
-TEKA4
-TELB3
-TELB4
-TEND3
-TESA3
-TFCO4
-TGMA3
-TIET11
-TIET3
-TIET4
-TIMS3
-TKNO3
-TKNO4
-TOTS3
-TOYB3
-TOYB4
-TPIS3
-TRAD3
-TRIS3
-TRPL3
-TRPL4
-TRPN3
-TTEN3
-TUPY3
-TXRX3
-TXRX4
-UCAS3
-UGPA3
-UNIP3
-UNIP5
-UNIP6
-USIM3
-USIM5
-USIM6
-VALE3
-VAMO3
-VBBR3
-VIIA3
-VITT3
-VIVA3
-VIVR3
-VIVT3
-VIVT4
-VLID3
-VSPT3
-VSPT4
-VSTE3
-VULC3
-VVAR11
-VVAR4
-VVEO3
-WEGE3
-WEST3
-WHRL3
-WHRL4
-WIZC3
-WLMM3
-WLMM4
-YDUQ3
-ZAMP3
+Ticker;Tipo
+ABCP11;Fundo Imobiliário
+AFHI11;Fundo Imobiliário
+AIEC11;Fundo Imobiliário
+ALMI11;Fundo Imobiliário
+ALZC11;Fundo Imobiliário
+ALZM11;Fundo Imobiliário
+ALZR11;Fundo Imobiliário
+ANCR11B;Fundo Imobiliário
+APTO11;Fundo Imobiliário
+APXM11;Fundo Imobiliário
+AQLL11;Fundo Imobiliário
+ARFI11B;Fundo Imobiliário
+AROA11;Fundo Imobiliário
+ARRI11;Fundo Imobiliário
+ARXD11;Fundo Imobiliário
+ASMT11;Fundo Imobiliário
+ASRF11;Fundo Imobiliário
+ATCR11;Fundo Imobiliário
+ATSA11;Fundo Imobiliário
+ATWN11;Fundo Imobiliário
+AURB11;Fundo Imobiliário
+BARI11;Fundo Imobiliário
+BBFI11B;Fundo Imobiliário
+BBFO11;Fundo Imobiliário
+BBIM11;Fundo Imobiliário
+BBPO11;Fundo Imobiliário
+BBRC11;Fundo Imobiliário
+BCFF11;Fundo Imobiliário
+BCIA11;Fundo Imobiliário
+BCRI11;Fundo Imobiliário
+BICE11;Fundo Imobiliário
+BICR11;Fundo Imobiliário
+BIME11;Fundo Imobiliário
+BIPD11;Fundo Imobiliário
+BLCA11;Fundo Imobiliário
+BLCP11;Fundo Imobiliário
+BLMC11;Fundo Imobiliário
+BLMG11;Fundo Imobiliário
+BLMO11;Fundo Imobiliário
+BLMR11;Fundo Imobiliário
+BLUR11;Fundo Imobiliário
+BMII11;Fundo Imobiliário
+BMLC11;Fundo Imobiliário
+BNFS11;Fundo Imobiliário
+BPFF11;Fundo Imobiliário
+BPLC11;Fundo Imobiliário
+BPML11;Fundo Imobiliário
+BPRP11;Fundo Imobiliário
+BRCO11;Fundo Imobiliário
+BRCR11;Fundo Imobiliário
+BREV11;Fundo Imobiliário
+BRHT11B;Fundo Imobiliário
+BRIM11;Fundo Imobiliário
+BRIP11;Fundo Imobiliário
+BRIX11;Fundo Imobiliário
+BRLA11;Fundo Imobiliário
+BROF11;Fundo Imobiliário
+BROL11;Fundo Imobiliário
+BRSE11;Fundo Imobiliário
+BTAL11;Fundo Imobiliário
+BTCI11;Fundo Imobiliário
+BTCR11;Fundo Imobiliário
+BTLG11;Fundo Imobiliário
+BTRA11;Fundo Imobiliário
+BTSG11;Fundo Imobiliário
+BTSI11;Fundo Imobiliário
+BTWR11;Fundo Imobiliário
+BVAR11;Fundo Imobiliário
+BZEL11;Fundo Imobiliário
+BZLI11;Fundo Imobiliário
+CACR11;Fundo Imobiliário
+CARE11;Fundo Imobiliário
+CBOP11;Fundo Imobiliário
+CCLB11;Fundo Imobiliário
+CCME11;Fundo Imobiliário
+CCRF11;Fundo Imobiliário
+CEOC11;Fundo Imobiliário
+CFHI11;Fundo Imobiliário
+CFII11;Fundo Imobiliário
+CIXR11;Fundo Imobiliário
+CJCT11;Fundo Imobiliário
+CJFI11;Fundo Imobiliário
+CNES11;Fundo Imobiliário
+COPP11;Fundo Imobiliário
+CPFF11;Fundo Imobiliário
+CPFO11;Fundo Imobiliário
+CPSH11;Fundo Imobiliário
+CPTS11;Fundo Imobiliário
+CRFF11;Fundo Imobiliário
+CSMC11;Fundo Imobiliário
+CTNP11;Fundo Imobiliário
+CTXT11;Fundo Imobiliário
+CVBI11;Fundo Imobiliário
+CVPR11;Fundo Imobiliário
+CXAG11;Fundo Imobiliário
+CXCE11B;Fundo Imobiliário
+CXCI11;Fundo Imobiliário
+CXCO11;Fundo Imobiliário
+CXRI11;Fundo Imobiliário
+CXTL11;Fundo Imobiliário
+CYCR11;Fundo Imobiliário
+CYLD11;Fundo Imobiliário
+DAMT11B;Fundo Imobiliário
+DEVA11;Fundo Imobiliário
+DLMT11;Fundo Imobiliário
+DMAC11;Fundo Imobiliário
+DOMC11;Fundo Imobiliário
+DOVL11B;Fundo Imobiliário
+DPRO11;Fundo Imobiliário
+DRIT11B;Fundo Imobiliário
+DVFF11;Fundo Imobiliário
+EDFO11B;Fundo Imobiliário
+EDGA11;Fundo Imobiliário
+EGYR11;Fundo Imobiliário
+ELDO11B;Fundo Imobiliário
+EQIR11;Fundo Imobiliário
+ERCR11;Fundo Imobiliário
+ERPA11;Fundo Imobiliário
+ESTQ11;Fundo Imobiliário
+EURO11;Fundo Imobiliário
+EVBI11;Fundo Imobiliário
+EXES11;Fundo Imobiliário
+FAED11;Fundo Imobiliário
+FAGL11;Fundo Imobiliário
+FAMB11B;Fundo Imobiliário
+FARU11;Fundo Imobiliário
+FATN11;Fundo Imobiliário
+FCAS11;Fundo Imobiliário
+FCFL11;Fundo Imobiliário
+FGPM11;Fundo Imobiliário
+FIGS11;Fundo Imobiliário
+FIIB11;Fundo Imobiliário
+FIIP11B;Fundo Imobiliário
+FINF11;Fundo Imobiliário
+FISC11;Fundo Imobiliário
+FISD11;Fundo Imobiliário
+FIVN11;Fundo Imobiliário
+FLCR11;Fundo Imobiliário
+FLMA11;Fundo Imobiliário
+FLRP11;Fundo Imobiliário
+FMOF11;Fundo Imobiliário
+FOFT11;Fundo Imobiliário
+FPAB11;Fundo Imobiliário
+FPNG11;Fundo Imobiliário
+FRHY11;Fundo Imobiliário
+FTCE11B;Fundo Imobiliário
+FVBI11;Fundo Imobiliário
+FVPQ11;Fundo Imobiliário
+GALG11;Fundo Imobiliário
+GAME11;Fundo Imobiliário
+GCFF11;Fundo Imobiliário
+GCOI11;Fundo Imobiliário
+GCRI11;Fundo Imobiliário
+GESE11B;Fundo Imobiliário
+GGRC11;Fundo Imobiliário
+GLOG11;Fundo Imobiliário
+GLPL11;Fundo Imobiliário
+GRLV11;Fundo Imobiliário
+GSFI11;Fundo Imobiliário
+GTLG11;Fundo Imobiliário
+GTWR11;Fundo Imobiliário
+GURB11;Fundo Imobiliário
+GVBI11;Fundo Imobiliário
+GZIT11;Fundo Imobiliário
+HAAA11;Fundo Imobiliário
+HABT11;Fundo Imobiliário
+HBCR11;Fundo Imobiliário
+HBRH11;Fundo Imobiliário
+HBTT11;Fundo Imobiliário
+HCHG11;Fundo Imobiliário
+HCPR11;Fundo Imobiliário
+HCRI11;Fundo Imobiliário
+HCST11;Fundo Imobiliário
+HCTR11;Fundo Imobiliário
+HDEL11;Fundo Imobiliário
+HDOF11;Fundo Imobiliário
+HFOF11;Fundo Imobiliário
+HGBS11;Fundo Imobiliário
+HGCR11;Fundo Imobiliário
+HGFF11;Fundo Imobiliário
+HGIC11;Fundo Imobiliário
+HGLG11;Fundo Imobiliário
+HGPO11;Fundo Imobiliário
+HGRE11;Fundo Imobiliário
+HGRS11;Fundo Imobiliário
+HGRU11;Fundo Imobiliário
+HILG11;Fundo Imobiliário
+HLOG11;Fundo Imobiliário
+HMOC11;Fundo Imobiliário
+HOFC11;Fundo Imobiliário
+HOSI11;Fundo Imobiliário
+HPDP11;Fundo Imobiliário
+HRDF11;Fundo Imobiliário
+HREC11;Fundo Imobiliário
+HSAF11;Fundo Imobiliário
+HSLG11;Fundo Imobiliário
+HSML11;Fundo Imobiliário
+HSRE11;Fundo Imobiliário
+HTMX11;Fundo Imobiliário
+HUCG11;Fundo Imobiliário
+HUSC11;Fundo Imobiliário
+HUSI11;Fundo Imobiliário
+IBCR11;Fundo Imobiliário
+IBFF11;Fundo Imobiliário
+IDFI11;Fundo Imobiliário
+IRDM11;Fundo Imobiliário
+IRIM11;Fundo Imobiliário
+ITIP11;Fundo Imobiliário
+ITIT11;Fundo Imobiliário
+JASC11;Fundo Imobiliário
+JBFO11;Fundo Imobiliário
+JCDA11;Fundo Imobiliário
+JCDB11;Fundo Imobiliário
+JFLL11;Fundo Imobiliário
+JPPA11;Fundo Imobiliário
+JPPC11;Fundo Imobiliário
+JRDM11;Fundo Imobiliário
+JSAF11;Fundo Imobiliário
+JSRE11;Fundo Imobiliário
+JTPR11;Fundo Imobiliário
+KCRE11;Fundo Imobiliário
+KEVE11;Fundo Imobiliário
+KFOF11;Fundo Imobiliário
+KINP11;Fundo Imobiliário
+KISU11;Fundo Imobiliário
+KIVO11;Fundo Imobiliário
+KNCR11;Fundo Imobiliário
+KNHF11;Fundo Imobiliário
+KNHY11;Fundo Imobiliário
+KNIP11;Fundo Imobiliário
+KNPR11;Fundo Imobiliário
+KNRE11;Fundo Imobiliário
+KNRI11;Fundo Imobiliário
+KNSC11;Fundo Imobiliário
+KNUQ11;Fundo Imobiliário
+LASC11;Fundo Imobiliário
+LATR11B;Fundo Imobiliário
+LAVF11;Fundo Imobiliário
+LFTT11;Fundo Imobiliário
+LGCP11;Fundo Imobiliário
+LIFE11;Fundo Imobiliário
+LKDV11;Fundo Imobiliário
+LLAO11;Fundo Imobiliário
+LOFT11B;Fundo Imobiliário
+LPLP11;Fundo Imobiliário
+LRDI11;Fundo Imobiliário
+LSPA11;Fundo Imobiliário
+LUGG11;Fundo Imobiliário
+LVBI11;Fundo Imobiliário
+MADS11;Fundo Imobiliário
+MALL11;Fundo Imobiliário
+MANA11;Fundo Imobiliário
+MATV11;Fundo Imobiliário
+MAXR11;Fundo Imobiliário
+MCCI11;Fundo Imobiliário
+MCHF11;Fundo Imobiliário
+MCHY11;Fundo Imobiliário
+MFAI11;Fundo Imobiliário
+MFCR11;Fundo Imobiliário
+MFII11;Fundo Imobiliário
+MGCR11;Fundo Imobiliário
+MGFF11;Fundo Imobiliário
+MGHT11;Fundo Imobiliário
+MGIM11;Fundo Imobiliário
+MGLC11;Fundo Imobiliário
+MGRI11;Fundo Imobiliário
+MINT11;Fundo Imobiliário
+MMPD11;Fundo Imobiliário
+MMVE11;Fundo Imobiliário
+MOFF11;Fundo Imobiliário
+MORC11;Fundo Imobiliário
+MORE11;Fundo Imobiliário
+MTOF11;Fundo Imobiliário
+MTRS11;Fundo Imobiliário
+MVFI11;Fundo Imobiliário
+MXRF11;Fundo Imobiliário
+NAVT11;Fundo Imobiliário
+NCHB11;Fundo Imobiliário
+NCRI11;Fundo Imobiliário
+NEWL11;Fundo Imobiliário
+NEWU11;Fundo Imobiliário
+NPAR11;Fundo Imobiliário
+NSLU11;Fundo Imobiliário
+NVHO11;Fundo Imobiliário
+NVIF11B;Fundo Imobiliário
+OGHY11;Fundo Imobiliário
+ONEF11;Fundo Imobiliário
+ORPD11;Fundo Imobiliário
+OUFF11;Fundo Imobiliário
+OUJP11;Fundo Imobiliário
+OULG11;Fundo Imobiliário
+OURE11;Fundo Imobiliário
+PABY11;Fundo Imobiliário
+PATB11;Fundo Imobiliário
+PATC11;Fundo Imobiliário
+PATL11;Fundo Imobiliário
+PBLV11;Fundo Imobiliário
+PCAS11;Fundo Imobiliário
+PEMA11;Fundo Imobiliário
+PLCR11;Fundo Imobiliário
+PLRI11;Fundo Imobiliário
+PNDL11;Fundo Imobiliário
+PNLN11;Fundo Imobiliário
+PNPR11;Fundo Imobiliário
+PNRC11;Fundo Imobiliário
+PORD11;Fundo Imobiliário
+PQAG11;Fundo Imobiliário
+PQDP11;Fundo Imobiliário
+PRSN11B;Fundo Imobiliário
+PRSV11;Fundo Imobiliário
+PRTS11;Fundo Imobiliário
+PRZS11;Fundo Imobiliário
+PVBI11;Fundo Imobiliário
+QAGR11;Fundo Imobiliário
+QAMI11;Fundo Imobiliário
+QIRI11;Fundo Imobiliário
+RBBV11;Fundo Imobiliário
+RBCB11;Fundo Imobiliário
+RBDS11;Fundo Imobiliário
+RBED11;Fundo Imobiliário
+RBFF11;Fundo Imobiliário
+RBGS11;Fundo Imobiliário
+RBHG11;Fundo Imobiliário
+RBHY11;Fundo Imobiliário
+RBIR11;Fundo Imobiliário
+RBLG11;Fundo Imobiliário
+RBOP11;Fundo Imobiliário
+RBRD11;Fundo Imobiliário
+RBRF11;Fundo Imobiliário
+RBRI11;Fundo Imobiliário
+RBRL11;Fundo Imobiliário
+RBRM11;Fundo Imobiliário
+RBRP11;Fundo Imobiliário
+RBRR11;Fundo Imobiliário
+RBRS11;Fundo Imobiliário
+RBRU11;Fundo Imobiliário
+RBRX11;Fundo Imobiliário
+RBRY11;Fundo Imobiliário
+RBTS11;Fundo Imobiliário
+RBVA11;Fundo Imobiliário
+RBVO11;Fundo Imobiliário
+RCFA11;Fundo Imobiliário
+RCFF11;Fundo Imobiliário
+RCKF11;Fundo Imobiliário
+RCRB11;Fundo Imobiliário
+RCRI11B;Fundo Imobiliário
+RECH11;Fundo Imobiliário
+RECR11;Fundo Imobiliário
+RECT11;Fundo Imobiliário
+RECX11;Fundo Imobiliário
+REIT11;Fundo Imobiliário
+RELG11;Fundo Imobiliário
+RFOF11;Fundo Imobiliário
+RINV11;Fundo Imobiliário
+RMAI11;Fundo Imobiliário
+RNDP11;Fundo Imobiliário
+RNGO11;Fundo Imobiliário
+ROOF11;Fundo Imobiliário
+RPRI11;Fundo Imobiliário
+RRCI11;Fundo Imobiliário
+RSPD11;Fundo Imobiliário
+RVBI11;Fundo Imobiliário
+RZAK11;Fundo Imobiliário
+RZAT11;Fundo Imobiliário
+RZDM11;Fundo Imobiliário
+RZTR11;Fundo Imobiliário
+SACL11;Fundo Imobiliário
+SADI11;Fundo Imobiliário
+SAIC11B;Fundo Imobiliário
+SALI11;Fundo Imobiliário
+SARE11;Fundo Imobiliário
+SBCL11;Fundo Imobiliário
+SCPF11;Fundo Imobiliário
+SEED11;Fundo Imobiliário
+SEQR11;Fundo Imobiliário
+SFND11;Fundo Imobiliário
+SFRO11;Fundo Imobiliário
+SHDP11B;Fundo Imobiliário
+SHOP11;Fundo Imobiliário
+SHPH11;Fundo Imobiliário
+SHSO11;Fundo Imobiliário
+SIGR11;Fundo Imobiliário
+SJAU11;Fundo Imobiliário
+SNCI11;Fundo Imobiliário
+SNEL11;Fundo Imobiliário
+SNFF11;Fundo Imobiliário
+SNLG11;Fundo Imobiliário
+SOLR11;Fundo Imobiliário
+SPAF11;Fundo Imobiliário
+SPDE11;Fundo Imobiliário
+SPMO11;Fundo Imobiliário
+SPTW11;Fundo Imobiliário
+SPVJ11;Fundo Imobiliário
+SPXS11;Fundo Imobiliário
+SRVD11;Fundo Imobiliário
+STRX11;Fundo Imobiliário
+TBOF11;Fundo Imobiliário
+TCIN11;Fundo Imobiliário
+TCPF11;Fundo Imobiliário
+TELD11;Fundo Imobiliário
+TELF11;Fundo Imobiliário
+TELM11;Fundo Imobiliário
+TEPP11;Fundo Imobiliário
+TFOF11;Fundo Imobiliário
+TGAR11;Fundo Imobiliário
+THRA11;Fundo Imobiliário
+TJKB11;Fundo Imobiliário
+TMPS11;Fundo Imobiliário
+TORD11;Fundo Imobiliário
+TORM13;Fundo Imobiliário
+TOUR11;Fundo Imobiliário
+TRBL11;Fundo Imobiliário
+TRNT11;Fundo Imobiliário
+TRXB11;Fundo Imobiliário
+TRXF11;Fundo Imobiliário
+TSER11;Fundo Imobiliário
+TSNC11;Fundo Imobiliário
+TSNM11;Fundo Imobiliário
+URPR11;Fundo Imobiliário
+VCJR11;Fundo Imobiliário
+VCRI11;Fundo Imobiliário
+VCRR11;Fundo Imobiliário
+VDSV11;Fundo Imobiliário
+VERE11;Fundo Imobiliário
+VGHF11;Fundo Imobiliário
+VGIP11;Fundo Imobiliário
+VGIR11;Fundo Imobiliário
+VIDS11;Fundo Imobiliário
+VIFI11;Fundo Imobiliário
+VILG11;Fundo Imobiliário
+VINO11;Fundo Imobiliário
+VISC11;Fundo Imobiliário
+VIUR11;Fundo Imobiliário
+VJFD11;Fundo Imobiliário
+VLIQ11;Fundo Imobiliário
+VLJS11;Fundo Imobiliário
+VLOL11;Fundo Imobiliário
+VOTS11;Fundo Imobiliário
+VPSI11;Fundo Imobiliário
+VRTA11;Fundo Imobiliário
+VSEC11;Fundo Imobiliário
+VSHO11;Fundo Imobiliário
+VSLH11;Fundo Imobiliário
+VTLT11;Fundo Imobiliário
+VTPA11;Fundo Imobiliário
+VTPL11;Fundo Imobiliário
+VTRT11;Fundo Imobiliário
+VTVI11;Fundo Imobiliário
+VTXI11;Fundo Imobiliário
+VVCO11;Fundo Imobiliário
+VVCR11;Fundo Imobiliário
+VVPR11;Fundo Imobiliário
+VVRI11;Fundo Imobiliário
+VXXV11;Fundo Imobiliário
+WHGR11;Fundo Imobiliário
+WPLZ11;Fundo Imobiliário
+WSEC11;Fundo Imobiliário
+WTSP11B;Fundo Imobiliário
+XBXO11;Fundo Imobiliário
+XPCI11;Fundo Imobiliário
+XPCM11;Fundo Imobiliário
+XPHT11;Fundo Imobiliário
+XPHT12;Fundo Imobiliário
+XPIN11;Fundo Imobiliário
+XPLG11;Fundo Imobiliário
+XPML11;Fundo Imobiliário
+XPPR11;Fundo Imobiliário
+XPSF11;Fundo Imobiliário
+YUFI11;Fundo Imobiliário
+ZAVI11;Fundo Imobiliário
+ZIFI11;Fundo Imobiliário
+FLEM11;FII Agro
+FZDB11;FII Agro
+FZDA11;FII Agro
+AAGR11;FII Agro
+AAZQ11;FII Agro
+BBGO11;FII Agro
+AMAZ11;FII Agro
+CPTR11;FII Agro
+DCRA11;FII Agro
+EGAF11;FII Agro
+AGRX11;FII Agro
+RZAG11;FII Agro
+JGPX11;FII Agro
+FGAA11;FII Agro
+GCRA11;FII Agro
+GRWA11;FII Agro
+HGAG11;FII Agro
+IAAG11;FII Agro
+RURA11;FII Agro
+KNCA11;FII Agro
+KOPA11;FII Agro
+LSAG11;FII Agro
+NCRA11;FII Agro
+OIAG11;FII Agro
+PLCA11;FII Agro
+RZEO11;FII Agro
+IAGR11;FII Agro
+CRAA11;FII Agro
+SNAG11;FII Agro
+VGIA11;FII Agro
+VCRA11;FII Agro
+XPCA11;FII Agro
