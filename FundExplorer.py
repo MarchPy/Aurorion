@@ -16,14 +16,14 @@ from rich.console import Console
 class FundExplorer:
     def __init__(self) -> None:
         self.__console = Console()
-    
+
     @staticmethod
     def coletar_tickers() -> pd.DataFrame:
         tickers = pd.read_csv(filepath_or_buffer='data/tickers.csv', encoding='iso-8859-1', sep=';').sort_values(by='Ticker')
 
         return tickers
 
-    def coletar_dados_do_ticker(self, tickers, verbose: bool = False) -> pd.DataFrame:
+    def coletar_dados_do_ticker(self, tickers: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         driver.maximize_window()
         qtd_index = 1
@@ -110,7 +110,7 @@ class FundExplorer:
         driver.close()
         
         return df
-    
+
     @staticmethod
     def tratar_dados(df: pd.DataFrame) -> pd.DataFrame:
         df = df.apply(lambda x: x.map(lambda x: x.replace('%', '')))
@@ -180,7 +180,8 @@ class FundExplorer:
                 preco_inicial = df_yf['Close'].iloc[0]
                 preco_final = df_yf['Close'].iloc[-1]
                 retorno_simples = ((preco_final - preco_inicial) / preco_inicial) * 100
-                df_copy.loc[index, '% Valorização'] = round(retorno_simples, 2)
+                retorno_simples = round(retorno_simples, 2)
+                df_copy.loc[index, '% Valorização'] = retorno_simples
                 
                 if verbose is True:
                         self.__console.print(
@@ -191,27 +192,28 @@ class FundExplorer:
 
     @staticmethod
     def filtro(df: pd.DataFrame) -> pd.DataFrame:
-        with open(file='configs/fiis_config.json', mode='r', encoding='utf-8') as file_obj:
+        with open(file='config/FundConfig.json', mode='r', encoding='utf-8') as file_obj:
             config = json.load(file_obj)
     
             filter_ = \
                 (df['DY (12 Meses)'] >= config['DY (Min)']) & \
                 (df['P/VP'] >= config['PVP (Min)']) & \
                 (df['P/VP'] <= config['PVP (Max)']) & \
-                (df['N° de cotistas'] > config['N de cotistas (Min)']  ) & \
+                (df['N° de cotistas'] >= config['N de cotistas (Min)']  ) & \
                 (df['Liquidez média diária'] >= config['Liquidez média diária (Min)']) & \
                 (df['Valorização (12 Meses)'] >= config['Valorização (12 Meses) (Min)']) & \
-                (df['% Volat. Anualizada'] < config['Volat. Anual (Max)'] ) & \
-                (df['% Volat. Mensal'] < config['Volat. Mensal (Max)'])
+                (df['% Volat. Anualizada'] <= config['Volat. Anual (Max)'] ) & \
+                (df['% Volat. Mensal'] <= config['Volat. Mensal (Max)'])
      
         df = df[filter_]
 
-        return df
+        return df.reset_index()
 
     @staticmethod
     def ahp_gaussian(df: pd.DataFrame) -> pd.DataFrame:
         df_copy = df.copy()
         df_final = df.copy()
+        df_copy['Ranking Final'] = 0
 
         df_copy = df_copy[[
             'DY (12 Meses)', 'P/VP',
@@ -265,7 +267,7 @@ class FundExplorer:
         return df_final.reset_index()
 
     @staticmethod
-    def definir_quantidade_de_compra(df: pd.DataFrame, ammount: int = 500) -> pd.DataFrame:
+    def definir_quantidade_de_compra(df: pd.DataFrame, ammount: int = 220) -> pd.DataFrame:
         df_copy = df.copy()
         parts = [
             40, 20, 10, 10, 10
@@ -301,23 +303,13 @@ def main():
     df_tratado = app.tratar_dados(df=df_data)
     df_indicadores_tecnicos = app.indicadores_tecnicos(df=df_tratado, verbose=True)
     df_filtrado = app.filtro(df=df_indicadores_tecnicos)
-    df_ahp = app.ahp_gaussian(df=df_filtrado)
-    df_qtd = app.definir_quantidade_de_compra(df=df_ahp)
     
     columns = [
         'Ticker', 'Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
-        '% Volat. Anualizada', '% Volat. Mensal', '% Valorização', 'RSI', 'Ranking AHP'
+        'N° de cotistas', '% Volat. Anualizada', '% Volat. Mensal', '% Valorização', 'RSI'
     ]
-
-    # df_final = df_qtd[columns]
-    df_final = df_qtd
-
-    for setor in df_final['Setor'].drop_duplicates().to_list():
-        df_setor = df_final[df_final['Setor'] == setor]
-        if not df_setor.empty:
-            print("\n\n")
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ---> [Setor] :: {setor}")
-            print(df_setor)
+    
+    df_final = df_filtrado[columns]
         
     save_file = True
     if save_file is True:
@@ -335,4 +327,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
