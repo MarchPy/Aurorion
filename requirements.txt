@@ -1,8 +1,8 @@
-lxml
-rich
-pandas
-yfinance
-html5lib
-openpyxl
-selenium
-webdriver_manager
+lxml==4.9.3
+rich==13.6.0
+pandas==2.1.1
+yfinance==0.2.30
+html5lib==1.1
+openpyxl==3.1.2
+selenium==4.13.0
+webdriver_manager==4.0.1

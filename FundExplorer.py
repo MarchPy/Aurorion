@@ -15,12 +15,15 @@ from rich.console import Console
 
 class FundExplorer:
     def __init__(self) -> None:
+        with open(file='config/FundConfig.json', mode='r', encoding='utf-8') as file_obj:
+            self.__config = json.load(file_obj)
+            
         self.__console = Console()
 
     @staticmethod
     def coletar_tickers() -> pd.DataFrame:
         tickers = pd.read_csv(filepath_or_buffer='data/tickers.csv', encoding='iso-8859-1', sep=';').sort_values(by='Ticker')
-
+        tickers = tickers[tickers['Tipo'] != "Acao"]
         return tickers
 
     def coletar_dados_do_ticker(self, tickers: pd.DataFrame, verbose: bool = False) -> pd.DataFrame:
@@ -30,13 +33,13 @@ class FundExplorer:
         df = pd.DataFrame()
 
         for _, row in tickers.iterrows():
-            url = "https://statusinvest.com.br/fundos-imobiliarios/" if row['Tipo'] == 'Fundo Imobiliário' else 'https://statusinvest.com.br/fiagros/'
+            url = "https://statusinvest.com.br/fundos-imobiliarios/" if row['Tipo'] == 'Fundo Imobiliario' else 'https://statusinvest.com.br/fiagros/'
             url = url + row['Ticker']
             driver.get(url=url)
 
             time.sleep(1)
             try:
-                if row['Tipo'] == 'Fundo Imobiliário':
+                if row['Tipo'] == 'Fundo Imobiliario':
                     nome_ativo                       = driver.find_element( by=By.XPATH, value='//*[@id="main-header"]/div[2]/div/div[1]/h1/small').text
                     cotacao_atual                    = driver.find_element(by=By.XPATH, value='//*[@id="main-2"]/div[2]/div[1]/div[1]/div/div[1]/strong').text
                     cotacao_minima52                 = driver.find_element(by=By.XPATH, value='//*[@id="main-2"]/div[2]/div[1]/div[2]/div/div[1]/strong').text
@@ -90,8 +93,7 @@ class FundExplorer:
                     "N° de cotistas": [numero_de_cotistas],
                     "Liquidez média diária": [liquidez_media_diaria],
                     "Rendimento mensal médio (24 Meses)": [rendimento_mensal_medio_24_meses],
-                    "Último rendimento": [ultimo_rendimento],
-                    "Link": [url]
+                    "Último rendimento": [ultimo_rendimento]
                 }
 
                 df_tmp = pd.DataFrame(line)
@@ -190,84 +192,51 @@ class FundExplorer:
 
         return df_copy
 
-    @staticmethod
-    def filtro(df: pd.DataFrame) -> pd.DataFrame:
-        with open(file='config/FundConfig.json', mode='r', encoding='utf-8') as file_obj:
-            config = json.load(file_obj)
-    
-            filter_ = \
-                (df['DY (12 Meses)'] >= config['DY (Min)']) & \
-                (df['P/VP'] >= config['PVP (Min)']) & \
-                (df['P/VP'] <= config['PVP (Max)']) & \
-                (df['N° de cotistas'] >= config['N de cotistas (Min)']  ) & \
-                (df['Liquidez média diária'] >= config['Liquidez média diária (Min)']) & \
-                (df['Valorização (12 Meses)'] >= config['Valorização (12 Meses) (Min)']) & \
-                (df['% Volat. Anualizada'] <= config['Volat. Anual (Max)'] ) & \
-                (df['% Volat. Mensal'] <= config['Volat. Mensal (Max)'])
-     
-        df = df[filter_]
+    def filtro(self, df: pd.DataFrame) -> pd.DataFrame:
+        df['Recomendação'] = ""
+        
+        buy_config = self.__config['buy']
+        keep_config = self.__config['keep']
 
+        for index, row in df.iterrows():
+            if row['DY (12 Meses)'] >= buy_config['DY (Min)'] and row['P/VP'] >= buy_config['PVP (Min)'] and \
+                row['P/VP'] <= buy_config['PVP (Max)'] and row['N° de cotistas'] >= buy_config['N de cotistas (Min)'] and \
+                row['Liquidez média diária'] >= buy_config['Liquidez média diária (Min)'] and row['Valorização (12 Meses)'] >= buy_config['Valorização (12 Meses) (Min)'] and \
+                row['% Volat. Anualizada'] <= buy_config['Volat. Anual (Max)'] and row['% Volat. Mensal'] <= buy_config['Volat. Mensal (Max)']:
+                    df.loc[index, 'Recomendação'] = "Compra"
+                    
+            elif row['DY (12 Meses)'] >= keep_config['DY (Min)'] and row['P/VP'] >= keep_config['PVP (Min)'] and \
+                row['P/VP'] <= keep_config['PVP (Max)'] and row['N° de cotistas'] >= keep_config['N de cotistas (Min)'] and \
+                row['Liquidez média diária'] >= keep_config['Liquidez média diária (Min)'] and row['Valorização (12 Meses)'] >= keep_config['Valorização (12 Meses) (Min)'] and \
+                row['% Volat. Anualizada'] <= keep_config['Volat. Anual (Max)'] and row['% Volat. Mensal'] <= keep_config['Volat. Mensal (Max)']:
+                    df.loc[index, 'Recomendação'] = "Mantenha caso tenha"
+                    
+            else:
+                df.loc[index, 'Recomendação'] = "Não compra/Remova da carteira caso tenha"
+                        
+     
+        df = df[df['Recomendação'] != 'Não compra/Remova da carteira caso tenha']
         return df.reset_index()
 
     @staticmethod
-    def ahp_gaussian(df: pd.DataFrame) -> pd.DataFrame:
+    def ranking(df: pd.DataFrame) -> pd.DataFrame:
         df_copy = df.copy()
-        df_final = df.copy()
-        df_copy['Ranking Final'] = 0
-
-        df_copy = df_copy[[
-            'DY (12 Meses)', 'P/VP',
-            'Liquidez média diária', 'Rendimento mensal médio (24 Meses)',
-            'Valorização (12 Meses)', 'Valorização (Mês atual)', '% Volat. Mensal',
-            '% Volat. Anualizada', 'Valor em Caixa'
-        ]]
-
-        crit_max_min = { 
-            'DY (12 Meses)': 'MAX',
-            'Liquidez média diária': 'MAX',
-            'P/VP': 'MIN',
-            'Valor em Caixa': 'MIN',
-            '% Volat. Mensal': 'MIN',
-            '% Volat. Anualizada': 'MIN',
-
-        }
-
-        # Calcular a matriz normalizada
-        for col in crit_max_min:
-            if crit_max_min[col] == 'MAX':
-                df_copy[col] = df_copy[col] / df_copy[col].sum()
-            else:
-                df_copy[col] = 1 / df_copy[col] / (1 / df_copy[col]).sum()
-
-        # Calcular a média, desvio padrão e o Fator Gaussiano
-        media = df_copy.mean()
-        desvio_padrao = df_copy.std()
-        fator_gaussiano = desvio_padrao / media
-
-        # Calcular a análise de sensibilidade do ranking
-        weights = fator_gaussiano.values
-        sensibilidade = df_copy.dot(weights)
-
-        # Calcular o ranking final
-        rank_final = sensibilidade.rank(ascending=False)
-
-        # Adicionar as colunas de média, desvio padrão, Fator Gaussiano,
-        # sensibilidade e ranking final ao DataFrame
-        df_copy['Media'] = media
-        df_copy['Desvio Padrao'] = desvio_padrao
-        df_copy['Fator Gaussiano'] = fator_gaussiano
-        df_copy['Analise Sensibilidade'] = sensibilidade
-        df_copy['Ranking Final'] = rank_final
-
-        for index, _ in df_final.iterrows():
-            df_final.loc[index, 'Ranking AHP'] = df_copy.loc[index, 'Ranking Final']
+               
+        # Calcular os rankings para cada coluna desejada
+        df_copy['Ranking DY (12 Meses)'] = df_copy['DY (12 Meses)'].rank(ascending=False, method='max')
+        df_copy['Ranking Liquidez média diária'] = df_copy['Liquidez média diária'].rank(ascending=False, method='max')
+        df_copy['Ranking P/VP'] = df_copy['P/VP'].rank(ascending=True, method='min')
+        df_copy['Ranking % Volat. Anualizada'] = df_copy['% Volat. Anualizada'].rank(ascending=True, method='min')
         
-        df_final.sort_values(by='Ranking AHP', ascending=True, inplace=True)
+        # Calcular a pontuação total com base nos rankings
+        df_copy['Pontuação Total'] = 3 * df_copy['Ranking DY (12 Meses)'] + 2 * df_copy['Ranking Liquidez média diária'] + df_copy['Ranking P/VP']
+        df_copy.sort_values(by='Pontuação Total', ascending=True, inplace=True)
+        
+        return df_copy
 
-        return df_final.reset_index()
-
-    @staticmethod
-    def definir_quantidade_de_compra(df: pd.DataFrame, ammount: int = 220) -> pd.DataFrame:
+    def definir_quantidade_de_compra(self, df: pd.DataFrame) -> pd.DataFrame:
+        ammount = self.__config['ammount']
+        
         df_copy = df.copy()
         parts = [
             40, 20, 10, 10, 10
@@ -297,33 +266,40 @@ class FundExplorer:
 
 
 def main():
-    app = FundExplorer()
-    tickers = app.coletar_tickers()
-    df_data = app.coletar_dados_do_ticker(tickers=tickers, verbose=True)
-    df_tratado = app.tratar_dados(df=df_data)
-    df_indicadores_tecnicos = app.indicadores_tecnicos(df=df_tratado, verbose=True)
-    df_filtrado = app.filtro(df=df_indicadores_tecnicos)
-    
-    columns = [
-        'Ticker', 'Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
-        'N° de cotistas', '% Volat. Anualizada', '% Volat. Mensal', '% Valorização', 'RSI'
-    ]
-    
-    df_final = df_filtrado[columns]
+    try:
+        app = FundExplorer()
+        tickers = app.coletar_tickers()
+        df_data = app.coletar_dados_do_ticker(tickers=tickers, verbose=True)
+        df_tratado = app.tratar_dados(df=df_data)
+        df_indicadores_tecnicos = app.indicadores_tecnicos(df=df_tratado, verbose=True)
+        df_filtrado = app.filtro(df=df_indicadores_tecnicos)
+        df_ranking = app.ranking(df=df_filtrado)
+        app.verificar_investimentos(df=df_filtrado, filename='data/carteira.csv')
+
+        columns = [
+            'Ticker', 'Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
+            'N° de cotistas', '% Volat. Anualizada', '% Volat. Mensal', '% Valorização', 'RSI', 'Pontuação Total'
+        ]
         
-    save_file = True
-    if save_file is True:
-        save_folder = "resultados/"
+        df_final = df_ranking[columns]
+            
+        save_file = True
+        if save_file is True:
+            save_folder = "resultados/"
 
-        try:
-            os.mkdir(save_folder)
+            try:
+                os.mkdir(save_folder)
 
-        except FileExistsError:
-            pass
+            except FileExistsError:
+                pass
 
-        filename = f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx"
-        df_final.to_excel(excel_writer=save_folder + filename, index=False)
-
+            filename = f"Resultado FIIs ({datetime.now().strftime('%d-%m-%Y')}).xlsx"
+            df_final.to_excel(excel_writer=save_folder + filename, index=False)
+            
+    except Exception as e:
+        with open(file='program.log', mode='a') as log_file:
+            log_file.write(f'[{datetime.now().strftime("%H:%M:%S")}] --- [ERRO] --- [{str(e)}]\n')
+        
 
 if __name__ == "__main__":
     main()
