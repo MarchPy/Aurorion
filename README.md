@@ -1,4 +1,4 @@
-# _$The-Aurorion$_
+# _The Aurorion_ <a href="https://www.python.org/downloads/release/python-3120/"><img title="Version" src="https://img.shields.io/badge/Python-3.12.0-yellow.svg?style=flat-square"></a> 
 
 ## Introdução ao programa
 
