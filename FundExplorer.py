@@ -155,7 +155,7 @@ class FundExplorer:
 
                 # Calculando RSI
                 try:
-                    period = self._console['rsi period']
+                    period = self.__config['rsi period']
 
                     def rma(x, n, y0):
                         a = (n - 1) / n
