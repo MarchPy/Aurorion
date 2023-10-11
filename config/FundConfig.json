@@ -1,5 +1,5 @@
 {
-    "ammount" : 500,
+    "ammount": 500,
 
     "buy": {
         "DY (Min)": 12,
@@ -7,7 +7,7 @@
         "PVP (Min)": 0,
         "N de cotistas (Min)": 10000,
         "Liquidez média diária (Min)": 200000,
-        "Valorização (12 Meses) (Min)": 5,
+        "Valorização (12 Meses) (Min)": 3,
         "Volat. Anual (Max)": 25,
         "Volat. Mensal (Max)": 5
     },
@@ -21,5 +21,7 @@
         "Valorização (12 Meses) (Min)": 0,
         "Volat. Anual (Max)": 40,
         "Volat. Mensal (Max)": 10
-    }
+    },
+
+    "rsi period": 14
 }

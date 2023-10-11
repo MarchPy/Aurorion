@@ -1,7 +1,14 @@
+# _$The-Aurorion$_
 
-# FundExplorer
+## Introdução ao programa
 
-Este script coleta e analisa dados de ativos financeiros, especificamente fundos de investimento imobiliário (FIIs) no Brasil. Ele extrai dados do site 'statusinvest.com.br' usando o Selenium e, em seguida, processa e filtra os dados para análises posteriores. Aqui está uma visão geral do código e de suas funcionalidades:
+A palavra 'Aurorion': Inspiração para Riqueza e Excelência
+
+'Aurorion' incorpora o prefixo 'Aur', que, em latim, está associado ao ouro, ao brilho e ao nascer do sol. Essa conexão com a riqueza e a luz adiciona uma dimensão de valor e sucesso ao nome. O sufixo 'Orion' nos faz lembrar da majestosa constelação que tem sido símbolo de grandeza e orientação por séculos. 'Aurorion' convida a explorar um caminho de riqueza e excelência, fornecendo uma bússola para a direção certa.
+
+Ao embarcarmos na jornada de criar e dar vida a um projeto, 'Aurorion' surge como uma escolha inspiradora. Com um nome que evoca a visão de riqueza, luz e orientação, 'Aurorion' representa não apenas um nome, mas um símbolo de promessa e potencial ilimitado.
+
+Este script coleta e analisa dados de ativos financeiros, mais especificamente fundos de investimento imobiliário (FIIs) no Brasil. Ele extrai informações do site 'statusinvest.com.br' utilizando a biblioteca Selenium e, em seguida, processa e filtra os dados para análises posteriores. Aqui está uma visão geral do código e de suas funcionalidades:
 
 ## Objetivo:
 

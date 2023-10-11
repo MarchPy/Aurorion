@@ -18,7 +18,7 @@ class FundExplorer:
         with open(file='config/FundConfig.json', mode='r', encoding='utf-8') as file_obj:
             self.__config = json.load(file_obj)
             
-        self.__console = Console()
+        self._console = Console()
 
     @staticmethod
     def coletar_tickers() -> pd.DataFrame:
@@ -99,12 +99,12 @@ class FundExplorer:
                 df_tmp = pd.DataFrame(line)
                 df = pd.concat([df, df_tmp])
                 if verbose is True:
-                    self.__console.print(
+                    self._console.print(
                         f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Dados coletados para o ativo[/]] :: [{row['Ticker']}] [[yellow]Empresas[/]] :: [{qtd_index} de {len(tickers)}]")
 
             except selenium.common.exceptions.NoSuchElementException as e:
                 if verbose is True:
-                    self.__console.print(
+                    self._console.print(
                         f"[[red]Erro[/]] Não foi possível coletar dados do ativo {row['Ticker']} :: {str(e)}")
 
             qtd_index += 1
@@ -143,21 +143,19 @@ class FundExplorer:
             df_yf = yf.Ticker(
                 ticker=str(index) + ".SA").history(period='1y', interval='1d')
 
-            if df_yf is not df_yf.empty and len(df_yf) >= 250:
+            if df_yf is not df_yf.empty and len(df_yf):
                 # Calcular as volatilidades
                 desvio_padrao_diario = df_yf['Close'].std()
                 # Calcular a volatilidade anualizada
-                volatilidade_anualizada = round(
-                    desvio_padrao_diario * np.sqrt(252), 2)
+                volatilidade_anualizada = round(desvio_padrao_diario * np.sqrt(252), 2)
                 df_copy.loc[index, '% Volat. Anualizada'] = volatilidade_anualizada
 
-                volatilidade_mensal = round(
-                    desvio_padrao_diario * np.sqrt(21), 2)
+                volatilidade_mensal = round(desvio_padrao_diario * np.sqrt(21), 2)
                 df_copy.loc[index, '% Volat. Mensal'] = volatilidade_mensal
 
                 # Calculando RSI
                 try:
-                    period = 14
+                    period = self._console['rsi period']
 
                     def rma(x, n, y0):
                         a = (n - 1) / n
@@ -186,7 +184,7 @@ class FundExplorer:
                 df_copy.loc[index, '% Valorização'] = retorno_simples
                 
                 if verbose is True:
-                        self.__console.print(
+                        self._console.print(
                             f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Indicadores calculados[/]] ---> [[yellow]Ticker[/]] :: [{index}] [[yellow]Volat. Anual[/]] :: [{volatilidade_anualizada}] [[yellow]Volat. Mensal[/]] :: [{volatilidade_mensal}] [[yellow]RSI[/]] :: [{rsi}] [[yellow]Retorno[/]] :: [{retorno_simples}]"
                         )
 
@@ -258,11 +256,11 @@ class FundExplorer:
         
         for _, row in df_carteira.iterrows():
             if row['Ticker'] not in df['Ticker'].values:
-                self.__console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Atenção[/]] ---> [[red]Ticker deve ser retirado da sua carteira[/]] :: [{row['Ticker']}]")
+                self._console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Atenção[/]] ---> [[red]Ticker deve ser retirado da sua carteira[/]] :: [{row['Ticker']}]")
 
         for ticker_rec in df['Ticker'].values:
             if ticker_rec not in df_carteira.values:
-                self.__console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Atenção[/]] ---> [[green]Ticker deve ser adicionado na sua carteira[/]] :: [{ticker_rec}]")        
+                self._console.print(f"[[blue]{datetime.now().strftime('%H:%M:%S')}[/]] ---> [[yellow]Atenção[/]] ---> [[green]Ticker deve ser adicionado na sua carteira[/]] :: [{ticker_rec}]")        
 
 
 def main():
@@ -277,8 +275,8 @@ def main():
         app.verificar_investimentos(df=df_filtrado, filename='data/carteira.csv')
 
         columns = [
-            'Ticker', 'Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)',
-            'N° de cotistas', '% Volat. Anualizada', '% Volat. Mensal', '% Valorização', 'RSI', 'Pontuação Total'
+            'Ticker', 'Nome', 'Setor', 'Tipo', 'Cotação Atual', 'DY (12 Meses)', 'N° de cotistas',
+            '% Volat. Anualizada', '% Volat. Mensal','% Valorização', 'RSI', 'Pontuação Total', 'Quant. de compra'
         ]
         
         df_final = df_ranking[columns]
@@ -297,8 +295,13 @@ def main():
             df_final.to_excel(excel_writer=save_folder + filename, index=False)
             
     except Exception as e:
+        app._console(f"[[bold red]Acorreu um erro enquanto o programa executava, acesse o arquivo de log para identificar o problema.[/]]")
         with open(file='program.log', mode='a') as log_file:
             log_file.write(f'[{datetime.now().strftime("%H:%M:%S")}] --- [ERRO] --- [{str(e)}]\n')
+            
+    except KeyboardInterrupt:
+        os.system(command='cls' if os.name == 'nt' else 'clear')
+        app._console.print("[[bold yellow]Processo encerrado pelo usuário.[/]]")
         
 
 if __name__ == "__main__":
