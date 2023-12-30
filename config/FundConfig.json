@@ -2,25 +2,21 @@
     "ammount": 500,
 
     "buy": {
-        "DY (Min)": 12,
-        "PVP (Max)": 2.0,
+        "DY (Min)": 11,
+        "PVP (Max)": 1.0,
         "PVP (Min)": 0,
-        "N de cotistas (Min)": 10000,
+        "N de cotistas (Min)": 15000,
         "Liquidez média diária (Min)": 200000,
-        "Valorização (12 Meses) (Min)": 3,
-        "Volat. Anual (Max)": 25,
-        "Volat. Mensal (Max)": 5
+        "Valorização (12 Meses) (Min)": 3
     },
 
     "keep": {
-        "DY (Min)": 10,
-        "PVP (Max)": 2.0,
+        "DY (Min)": 9,
+        "PVP (Max)": 1.0,
         "PVP (Min)": 0,
         "N de cotistas (Min)": 5000,
-        "Liquidez média diária (Min)": 10000,
-        "Valorização (12 Meses) (Min)": 0,
-        "Volat. Anual (Max)": 40,
-        "Volat. Mensal (Max)": 10
+        "Liquidez média diária (Min)": 100000,
+        "Valorização (12 Meses) (Min)": 0
     },
 
     "rsi period": 14
